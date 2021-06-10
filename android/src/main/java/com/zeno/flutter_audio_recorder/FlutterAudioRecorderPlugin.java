@@ -63,9 +63,8 @@ public class FlutterAudioRecorderPlugin implements MethodCallHandler, PluginRegi
 
   @Override
   public boolean onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
-    final int REQUEST_RECORD_AUDIO_PERMISSION = 200;
     switch (requestCode) {
-      case REQUEST_RECORD_AUDIO_PERMISSION:
+      case PERMISSIONS_REQUEST_RECORD_AUDIO:
         boolean granted = true;
         Log.d(LOG_NAME, "parsing result");
         for (int result : grantResults) {
@@ -87,12 +86,12 @@ public class FlutterAudioRecorderPlugin implements MethodCallHandler, PluginRegi
 
   private boolean hasRecordPermission(){
     // if after [Marshmallow], we need to check permission on runtime
-    if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
-      return (ContextCompat.checkSelfPermission(registrar.context(), Manifest.permission.RECORD_AUDIO) == PackageManager.PERMISSION_GRANTED)
-              && (ContextCompat.checkSelfPermission(registrar.context(), Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED);
-    } else {
+   // if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
+   //   return (ContextCompat.checkSelfPermission(registrar.context(), Manifest.permission.RECORD_AUDIO) == PackageManager.PERMISSION_GRANTED)
+    //          && (ContextCompat.checkSelfPermission(registrar.context(), Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED);
+   // } else {
       return ContextCompat.checkSelfPermission(registrar.context(), Manifest.permission.RECORD_AUDIO) == PackageManager.PERMISSION_GRANTED;
-    }
+   // }
   }
 
   @Override
@@ -137,11 +136,11 @@ public class FlutterAudioRecorderPlugin implements MethodCallHandler, PluginRegi
     } else {
       Log.d(LOG_NAME, "handleHasPermission false");
 
-      if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
-        ActivityCompat.requestPermissions(registrar.activity(), new String[]{Manifest.permission.RECORD_AUDIO, Manifest.permission.WRITE_EXTERNAL_STORAGE}, PERMISSIONS_REQUEST_RECORD_AUDIO);
-      } else {
+      //if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
+      //  ActivityCompat.requestPermissions(registrar.activity(), new String[]{Manifest.permission.RECORD_AUDIO, Manifest.permission.WRITE_EXTERNAL_STORAGE}, PERMISSIONS_REQUEST_RECORD_AUDIO);
+      //} else {
         ActivityCompat.requestPermissions(registrar.activity(), new String[]{Manifest.permission.RECORD_AUDIO}, PERMISSIONS_REQUEST_RECORD_AUDIO);
-      }
+     // }
     }
 
   }

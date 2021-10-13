@@ -6,4 +6,9 @@
 
 build/
 
+# Android v2 Embedding related
+**/.classpath
+**/.project
+**/.settings/
+
 .idea

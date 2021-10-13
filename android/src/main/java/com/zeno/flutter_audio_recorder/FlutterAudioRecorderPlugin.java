@@ -1,5 +1,8 @@
 package com.zeno.flutter_audio_recorder;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+
 import android.Manifest;
 import android.content.pm.PackageManager;
 import android.media.AudioFormat;
@@ -26,15 +29,16 @@ import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler;
 import io.flutter.plugin.common.MethodChannel.Result;
-import io.flutter.plugin.common.PluginRegistry;
-import io.flutter.plugin.common.PluginRegistry.Registrar;
+import io.flutter.embedding.engine.plugins.FlutterPlugin;
+import io.flutter.embedding.engine.plugins.activity.ActivityAware;
+import io.flutter.embedding.engine.plugins.activity.ActivityPluginBinding;
 
 /** FlutterAudioRecorderPlugin */
-public class FlutterAudioRecorderPlugin implements MethodCallHandler, PluginRegistry.RequestPermissionsResultListener {
+public class FlutterAudioRecorderPlugin implements FlutterPlugin, ActivityAware, MethodCallHandler, PluginRegistry.RequestPermissionsResultListener {
   private static final String LOG_NAME = "AndroidAudioRecorder";
   private static final int PERMISSIONS_REQUEST_RECORD_AUDIO = 200;
   private static final byte RECORDER_BPP = 16; // we use 16bit
-  private Registrar registrar;
+  // private Registrar registrar;
   private int mSampleRate = 16000; // 16Khz
   private AudioRecord mRecorder = null;
   private String mFilePath;
@@ -46,20 +50,52 @@ public class FlutterAudioRecorderPlugin implements MethodCallHandler, PluginRegi
   private double mAveragePower = -120;
   private Thread mRecordingThread = null;
   private long mDataSize = 0;
+  private Activity _activity;
   private Result _result;
+
+  @Override
+  public void onAttachedToEngine(@NonNull FlutterPluginBinding flutterPluginBinding) {
+    channel = new MethodChannel(flutterPluginBinding.getBinaryMessenger(), "flutter_audio_recorder");
+    channel.setMethodCallHandler(this);
+  }
+
+  @Override
+  public void onAttachedToActivity(ActivityPluginBinding activityPluginBinding) {
+    this._activity = activityPluginBinding.getActivity();
+  }
+
+  @Override
+  public void onDetachedFromActivityForConfigChanges() {
+    this._activity = null;
+  }
+
+  @Override
+  public void onReattachedToActivityForConfigChanges(ActivityPluginBinding activityPluginBinding) {
+    this._activity = activityPluginBinding.getActivity();
+  }
+
+  @Override
+  public void onDetachedFromActivity() {
+    this._activity = null;
+  }
+
+  @Override
+  public void onDetachedFromEngine(@NonNull FlutterPluginBinding binding) {
+    channel.setMethodCallHandler(null);
+  }
 
 
   /** Plugin registration. */
-  public static void registerWith(Registrar registrar) {
+  // public static void registerWith(Registrar registrar) {
 
-    final MethodChannel channel = new MethodChannel(registrar.messenger(), "flutter_audio_recorder");
-    channel.setMethodCallHandler(new FlutterAudioRecorderPlugin(registrar));
-  }
+  //   final MethodChannel channel = new MethodChannel(registrar.messenger(), "flutter_audio_recorder");
+  //   channel.setMethodCallHandler(new FlutterAudioRecorderPlugin(registrar));
+  // }
 
-  public FlutterAudioRecorderPlugin(Registrar registrar) {
-    this.registrar = registrar;
-    this.registrar.addRequestPermissionsResultListener(this);
-  }
+  // public FlutterAudioRecorderPlugin(Registrar registrar) {
+  //   this.registrar = registrar;
+  //   this.registrar.addRequestPermissionsResultListener(this);
+  // }
 
   @Override
   public boolean onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
@@ -95,7 +131,7 @@ public class FlutterAudioRecorderPlugin implements MethodCallHandler, PluginRegi
   }
 
   @Override
-  public void onMethodCall(MethodCall call, Result result) {
+  public void onMethodCall(@NonNull MethodCall call, @NonNull Result result) {
     // Log.d(LOG_NAME, "calling " + call.method);
     _result = result;
 
@@ -139,7 +175,7 @@ public class FlutterAudioRecorderPlugin implements MethodCallHandler, PluginRegi
       //if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
       //  ActivityCompat.requestPermissions(registrar.activity(), new String[]{Manifest.permission.RECORD_AUDIO, Manifest.permission.WRITE_EXTERNAL_STORAGE}, PERMISSIONS_REQUEST_RECORD_AUDIO);
       //} else {
-        ActivityCompat.requestPermissions(registrar.activity(), new String[]{Manifest.permission.RECORD_AUDIO}, PERMISSIONS_REQUEST_RECORD_AUDIO);
+        ActivityCompat.requestPermissions(this._activity, new String[]{Manifest.permission.RECORD_AUDIO}, PERMISSIONS_REQUEST_RECORD_AUDIO);
      // }
     }
 

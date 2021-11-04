@@ -1,3 +1,6 @@
+## x.x.x
+Migrated to Android v2 Embedding.
+
 ## 0.5.5
 migrate to Android X.
 

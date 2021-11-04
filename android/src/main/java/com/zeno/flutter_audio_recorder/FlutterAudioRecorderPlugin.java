@@ -4,15 +4,16 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import android.Manifest;
+import android.app.Activity;
 import android.content.pm.PackageManager;
 import android.media.AudioFormat;
 import android.media.AudioRecord;
 import android.media.MediaRecorder;
 import android.os.Build.VERSION;
+import android.util.Log;
 
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
-import android.util.Log;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -29,6 +30,9 @@ import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler;
 import io.flutter.plugin.common.MethodChannel.Result;
+import io.flutter.plugin.common.PluginRegistry;
+// import io.flutter.plugin.common.PluginRegistry.Registrar;
+
 import io.flutter.embedding.engine.plugins.FlutterPlugin;
 import io.flutter.embedding.engine.plugins.activity.ActivityAware;
 import io.flutter.embedding.engine.plugins.activity.ActivityPluginBinding;
@@ -50,13 +54,14 @@ public class FlutterAudioRecorderPlugin implements FlutterPlugin, ActivityAware,
   private double mAveragePower = -120;
   private Thread mRecordingThread = null;
   private long mDataSize = 0;
+  private MethodChannel _channel;
   private Activity _activity;
   private Result _result;
 
   @Override
   public void onAttachedToEngine(@NonNull FlutterPluginBinding flutterPluginBinding) {
-    channel = new MethodChannel(flutterPluginBinding.getBinaryMessenger(), "flutter_audio_recorder");
-    channel.setMethodCallHandler(this);
+    _channel = new MethodChannel(flutterPluginBinding.getBinaryMessenger(), "flutter_audio_recorder");
+    _channel.setMethodCallHandler(this);
   }
 
   @Override
@@ -81,7 +86,7 @@ public class FlutterAudioRecorderPlugin implements FlutterPlugin, ActivityAware,
 
   @Override
   public void onDetachedFromEngine(@NonNull FlutterPluginBinding binding) {
-    channel.setMethodCallHandler(null);
+    _channel.setMethodCallHandler(null);
   }
 
 
@@ -126,7 +131,7 @@ public class FlutterAudioRecorderPlugin implements FlutterPlugin, ActivityAware,
    //   return (ContextCompat.checkSelfPermission(registrar.context(), Manifest.permission.RECORD_AUDIO) == PackageManager.PERMISSION_GRANTED)
     //          && (ContextCompat.checkSelfPermission(registrar.context(), Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED);
    // } else {
-      return ContextCompat.checkSelfPermission(registrar.context(), Manifest.permission.RECORD_AUDIO) == PackageManager.PERMISSION_GRANTED;
+      return ContextCompat.checkSelfPermission(_activity.getBaseContext(), Manifest.permission.RECORD_AUDIO) == PackageManager.PERMISSION_GRANTED;
    // }
   }
 

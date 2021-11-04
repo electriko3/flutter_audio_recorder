@@ -24,7 +24,7 @@ class FlutterAudioRecorder {
     _initRecorder = _init(path, audioFormat, sampleRate);
   }
 
-  /// Initialized recorder instance
+  /// initialized recorder instance
   Future _init(String path, AudioFormat? audioFormat, int sampleRate) async {
     String extension;
     String extensionInPath;
@@ -120,7 +120,7 @@ class FlutterAudioRecorder {
 
     var result = await _channel.invokeMethod('current', {"channel": channel});
 
-    if (result != null && _recording?.status != RecordingStatus.Stopped) {
+    if (result != null && _recording?.status != RecordingStatus.stopped) {
       response = Map.from(result);
       _responseToRecording(response);
     }
@@ -168,11 +168,11 @@ class FlutterAudioRecorder {
   static AudioFormat? _stringToAudioFormat(String? extension) {
     switch (extension) {
       case ".wav":
-        return AudioFormat.WAV;
+        return AudioFormat.wav;
       case ".mp4":
       case ".aac":
       case ".m4a":
-        return AudioFormat.AAC;
+        return AudioFormat.aac;
       default:
         return null;
     }
@@ -181,9 +181,9 @@ class FlutterAudioRecorder {
   /// Convert Enum to String
   static String _audioFormatToString(AudioFormat format) {
     switch (format) {
-      case AudioFormat.WAV:
+      case AudioFormat.wav:
         return ".wav";
-      case AudioFormat.AAC:
+      case AudioFormat.aac:
         return ".m4a";
       default:
         return ".m4a";
@@ -194,17 +194,17 @@ class FlutterAudioRecorder {
   static RecordingStatus _stringToRecordingStatus(String? status) {
     switch (status) {
       case "unset":
-        return RecordingStatus.Unset;
+        return RecordingStatus.unset;
       case "initialized":
-        return RecordingStatus.Initialized;
+        return RecordingStatus.initialized;
       case "recording":
-        return RecordingStatus.Recording;
+        return RecordingStatus.recording;
       case "paused":
-        return RecordingStatus.Paused;
+        return RecordingStatus.paused;
       case "stopped":
-        return RecordingStatus.Stopped;
+        return RecordingStatus.stopped;
       default:
-        return RecordingStatus.Unset;
+        return RecordingStatus.unset;
     }
   }
 }
@@ -247,24 +247,24 @@ class AudioMetering {
 /// Represent the status of a Recording
 enum RecordingStatus {
   /// Recording not initialized
-  Unset,
+  unset,
 
   /// Ready for start recording
-  Initialized,
+  initialized,
 
   /// Currently recording
-  Recording,
+  recording,
 
   /// Currently Paused
-  Paused,
+  paused,
 
   /// This specific recording Stopped, cannot be start again
-  Stopped,
+  stopped,
 }
 
 /// Audio Format,
 /// WAV is lossless audio, recommended
 enum AudioFormat {
-  AAC,
-  WAV,
+  aac,
+  wav,
 }

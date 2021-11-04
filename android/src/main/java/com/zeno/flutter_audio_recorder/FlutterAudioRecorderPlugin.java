@@ -31,7 +31,6 @@ import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler;
 import io.flutter.plugin.common.MethodChannel.Result;
 import io.flutter.plugin.common.PluginRegistry;
-// import io.flutter.plugin.common.PluginRegistry.Registrar;
 
 import io.flutter.embedding.engine.plugins.FlutterPlugin;
 import io.flutter.embedding.engine.plugins.activity.ActivityAware;
@@ -42,7 +41,6 @@ public class FlutterAudioRecorderPlugin implements FlutterPlugin, ActivityAware,
   private static final String LOG_NAME = "AndroidAudioRecorder";
   private static final int PERMISSIONS_REQUEST_RECORD_AUDIO = 200;
   private static final byte RECORDER_BPP = 16; // we use 16bit
-  // private Registrar registrar;
   private int mSampleRate = 16000; // 16Khz
   private AudioRecord mRecorder = null;
   private String mFilePath;
@@ -67,6 +65,7 @@ public class FlutterAudioRecorderPlugin implements FlutterPlugin, ActivityAware,
   @Override
   public void onAttachedToActivity(ActivityPluginBinding activityPluginBinding) {
     this._activity = activityPluginBinding.getActivity();
+    activityPluginBinding.addRequestPermissionsResultListener(this);
   }
 
   @Override
@@ -77,6 +76,7 @@ public class FlutterAudioRecorderPlugin implements FlutterPlugin, ActivityAware,
   @Override
   public void onReattachedToActivityForConfigChanges(ActivityPluginBinding activityPluginBinding) {
     this._activity = activityPluginBinding.getActivity();
+    activityPluginBinding.addRequestPermissionsResultListener(this);
   }
 
   @Override
@@ -88,19 +88,6 @@ public class FlutterAudioRecorderPlugin implements FlutterPlugin, ActivityAware,
   public void onDetachedFromEngine(@NonNull FlutterPluginBinding binding) {
     _channel.setMethodCallHandler(null);
   }
-
-
-  /** Plugin registration. */
-  // public static void registerWith(Registrar registrar) {
-
-  //   final MethodChannel channel = new MethodChannel(registrar.messenger(), "flutter_audio_recorder");
-  //   channel.setMethodCallHandler(new FlutterAudioRecorderPlugin(registrar));
-  // }
-
-  // public FlutterAudioRecorderPlugin(Registrar registrar) {
-  //   this.registrar = registrar;
-  //   this.registrar.addRequestPermissionsResultListener(this);
-  // }
 
   @Override
   public boolean onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
@@ -119,9 +106,9 @@ public class FlutterAudioRecorderPlugin implements FlutterPlugin, ActivityAware,
           _result.success(granted);
         }
         return granted;
-        default:
-          Log.d(LOG_NAME, "onRequestPermissionsResult - false");
-          return false;
+      default:
+        Log.d(LOG_NAME, "onRequestPermissionsResult - false");
+        return false;
     }
   }
 
